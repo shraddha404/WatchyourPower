@@ -1,0 +1,61 @@
+Index: new_multi_location_data.php
+===================================================================
+--- new_multi_location_data.php	(revision 992)
++++ new_multi_location_data.php	(revision 991)
+@@ -10,10 +10,6 @@
+     $location_string .= $value.",";
+ }
+     $location_string = rtrim($location_string, ",");
+-if($details['from_date']=='' || $details['to_date']==''){
+-$details['from_date'] = date('d/m/Y',strtotime('-7 day'));
+-$details['to_date'] = date('d/m/Y',strtotime('-1 day'));
+-}
+ $details['locations']= $location_string;
+ $raw_data = $u->getRawDataForMultiLocations($details);
+ $loc_arr = $_POST['locations'];
+@@ -31,33 +27,18 @@
+ }else{
+ foreach($new_loc_arr as $new_loc){
+ 	
+-$evening_data = $u->getDailySummaryForEveningMultiLocation($new_loc);
++	$evening_data = $u->getDailySummaryForEveningMultiLocation($new_loc);
+ //$evening_data = $u->getDailySummaryForMultiLocation($new_loc);
+ $report_data = $u->getLocationSummaryReport($details, $new_loc['location_id']);
+ //$column_report_data =$u->getColumnChartDataForEvening($details,$new_loc['location_id']);
+ //$column_report_data = array_values($column_report_data);
+ //$i=count($column_report_data);
+-$from_date = new DateTime(date('Y-m-d',get_strtotime($details['from_date'])));
+-$to_date = new DateTime(date('Y-m-d',get_strtotime($details['to_date'])));
+-$diff = date_diff($from_date,$to_date);
+-$column_report_data =$u->getColumnChartDataForEvening($details, $new_loc['location_id']);
+- $average_supply_minutes = $u->getEveningAverageAvailibility($column_report_data,$diff);
+-$average_divisior = 0;
+-foreach($column_report_data as $c_data){
+-if($c_data['no_data']==6){
+-continue;
+-}
+-$average_divisior++;
+-}
++//print_r($report_data);
+  $evening_supply = 0;
+         foreach($evening_data as $ev){
+         $evening_supply = $ev['normal'] + $ev['low'] + $ev['high'];
+         }
+- $average_availability = floor(($average_supply_minutes * 60 ) / $average_divisior);
+-$h= secondsToTime($average_availability);
+-$hrs=explode(':', $h);
+-$hrsmins=$hrs[0] * 60;  
+- $mins=$hrsmins+$hrs[1];
++
+ 		//Initialize to zero
+ 		$normal = 0; $low = 0; $high = 0; $no_supply = 0; $no_data = 100;
+ 
+@@ -87,7 +68,7 @@
+         $new_summary[$new_loc['location_id']]['supply_between_16_to_60']=secondsToTime($interrupt_duration['supply_between_16_to_60']);
+         $new_summary[$new_loc['location_id']]['supply_between_61_to_180']=secondsToTime($interrupt_duration['supply_between_61_to_180']);
+         $new_summary[$new_loc['location_id']]['supply_more_than_180']=secondsToTime($interrupt_duration['supply_more_than_180']);
+-        $new_summary[$new_loc['location_id']]['evening_supply']=$mins;
++        $new_summary[$new_loc['location_id']]['evening_supply']=$evening_supply;
+         $new_summary[$new_loc['location_id']]['normal']=$normal;
+         $new_summary[$new_loc['location_id']]['low']=$low;
+         $new_summary[$new_loc['location_id']]['high']=$high;

@@ -1,0 +1,10 @@
+## procedure to insert data
+DROP  PROCEDURE addDeviceInstallationLog;
+DELIMITER $$
+CREATE PROCEDURE addDeviceInstallationLog (IN row_id int(11),IN oper varchar(250))
+BEGIN
+    insert into device_installation_log (device_id,location_id,installed,status,sim_card_id,name,deployed,installed_by,remark,operation,created) select device_id,location_id,installed,status,sim_card_id,name,deployed,installed_by,remark,oper,NOW() from device_installations where id=row_id;
+END$$
+DELIMITER ;
+
+

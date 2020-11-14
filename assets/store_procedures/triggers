@@ -1,0 +1,36 @@
+## INSERT device_installation 
+## If any row inserted to device_installation table insert same row to device_intallatoin_log table
+
+DELIMITER //
+DROP TRIGGER IF EXISTS device_installation_insert_trigger//
+CREATE  TRIGGER device_installation_insert_trigger
+    AFTER INSERT ON `device_installations`
+    FOR EACH ROW
+
+BEGIN
+    CALL addDeviceInstallationLog(NEW.id);
+END//
+DELIMITER ;
+
+
+DELIMITER //
+DROP TRIGGER IF EXISTS device_installation_update_trigger//
+CREATE  TRIGGER device_installation_update_trigger
+    AFTER UPDATE ON `device_installations`
+    FOR EACH ROW
+
+BEGIN
+    CALL addDeviceInstallationLog(NEW.id);
+END//
+DELIMITER ;
+
+DELIMITER //
+DROP TRIGGER IF EXISTS device_installation_delete_trigger//
+CREATE  TRIGGER device_installation_delete_trigger
+    BEFORE DELETE ON `device_installations`
+    FOR EACH ROW
+
+BEGIN
+    CALL addDeviceInstallationLog(OLD.id);
+END//
+DELIMITER ;
